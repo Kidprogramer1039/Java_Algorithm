@@ -2,18 +2,16 @@ import java.util.HashMap;
 
 class Solution {
     public String solution(String[] participant, String[] completion) {
-        HashMap<String, Integer> map = new HashMap<>();
-        for (String c : completion) {
-            map.put(c, map.getOrDefault(c, 0) + 1);
-        }
+        String answer = "";
+        HashMap<String, Integer> hm = new HashMap<>();
+        for (String player : participant) hm.put(player, hm.getOrDefault(player, 0) + 1);
+        for (String player : completion) hm.put(player, hm.get(player) - 1);
 
-        for (String p : participant) {
-            if (!map.containsKey(p) || map.get(p) == 0) {
-                return p;
+        for (String key : hm.keySet()) {
+            if (hm.get(key) != 0){
+                answer = key;
             }
-            map.put(p, map.get(p) - 1);
         }
-
-        return ""; // 모든 참가자가 완주한 경우 (문제 조건상 실행되지 않음)
+        return answer;
     }
 }
