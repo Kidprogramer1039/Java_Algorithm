@@ -1,0 +1,56 @@
+import java.io.*;
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        LinkedList<Character> cursor = new LinkedList<>();
+        String s= br.readLine();
+        for(int i = 0; i<s.length(); i++){
+            cursor.add(s.charAt(i));
+        }
+
+        ListIterator <Character> iterator = cursor.listIterator();
+        while(iterator.hasNext()){
+            iterator.next();
+        }
+
+        int M = Integer.parseInt(br.readLine());
+
+        for(int i = 0; i<M; i++){
+            StringTokenizer st = new StringTokenizer(br.readLine()); // 문자받을거
+            char command1 = st.nextToken().charAt(0);
+
+            if(command1 =='P'){
+                char command2 = st.nextToken().charAt(0);
+                iterator.add(command2);
+            }
+            else if(command1==('L')){
+                if(iterator.hasPrevious()){
+                    iterator.previous();
+                }
+            }else if(command1==('D')){
+                if(iterator.hasNext()){
+                    iterator.next();
+                }
+            }else if(command1==('B')){
+                if(iterator.hasPrevious()){
+                    iterator.previous();
+                    iterator.remove();
+                }
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for(char c : cursor){
+            sb.append(c);
+        }
+        bw.write(String.valueOf(sb));
+        bw.flush();
+        bw.close();
+
+
+    }
+}
