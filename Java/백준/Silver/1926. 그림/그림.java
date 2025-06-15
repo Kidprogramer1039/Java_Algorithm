@@ -1,76 +1,77 @@
 import java.io.*;
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class Main {
-
     public static void main(String[] args) throws IOException {
-        Scanner sc = new Scanner(System.in);
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        int n = Integer.parseInt(st.nextToken());
+        int m = Integer.parseInt(st.nextToken());
 
-        int n = sc.nextInt();  // 도화지의 세로 크기 n
-        int m = sc.nextInt();  // 도화지의 가로 크기 m
+        // 1) 리스트 대신 primitive 배열 선언
+        // — 기존
+        // ArrayList<Integer> arr = new ArrayList<>();
+        // ArrayList<Integer[]> board = new ArrayList<>();
+        int[][] board = new int[n][m];
+        boolean[][] vis   = new boolean[n][m];
 
-        int[][] pictureArr = new int[n + 2][m + 2];  // 그림 배열
-        int[][] visited = new int[n + 2][m + 2];  // 처리 여부 저장 배열
-
-        int[] dx = {1, 0, -1, 0};  // 우 상 좌 하
-        int[] dy = {0, 1, 0, -1};
-
-        for (int i = 1; i <= n; i++) {  // 그림 배열값 세팅
-            for (int j = 1; j <= m; j++) {
-                pictureArr[i][j] = sc.nextInt();
+        // 2) 입력 루프: ArrayList → 2차원 배열로 바로 저장
+        // — 기존
+        // for (int i = 0; i < m; i++) {
+        //     st = new StringTokenizer(br.readLine());
+        //     for (int j = 0; j < n; j++) {
+        //         arr.add(Integer.parseInt(st.nextToken()));
+        //     }
+        //     board.add(arr.toArray(new Integer[0]));
+        // }
+        for (int i = 0; i < n; i++) {
+            st = new StringTokenizer(br.readLine());
+            for (int j = 0; j < m; j++) {
+                board[i][j] = Integer.parseInt(st.nextToken());
             }
         }
 
+        int[] dx = {-1, 1, 0, 0};
+        int[] dy = { 0, 0, -1, 1};
+        Queue<int[]> q = new LinkedList<>();
+        int maxArea = 0;
+        int picNum = 0;
+        // 3) 그림 영역 탐색: 조건 검사 및 큐 삽입
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                // — 기존
+                // if (tmp.get(i)[j] == 1) continue;
+                if (board[i][j] != 1 || vis[i][j]) continue;
+                vis[i][j] = true;
+                q.offer(new int[]{i, j});
+                int area = 0;
 
-        Queue<Pair> queue = new LinkedList<>();  // 큐 생성
-        int count = 0;  // 그림의 개수
-        int maxSize = 0;  // 그림의 최대 크기
+                // 4) BFS 내부: 경계·값·방문 검사
+                while (!q.isEmpty()) {
+                    int[] cur = q.poll();
+                    area++;
 
-        for (int i = 1; i <= n; i++) {
-            for (int j = 1; j <= m; j++) {
+                    for (int k = 0; k < 4; k++) {
+                        int x = cur[0] + dx[k];
+                        int y = cur[1] + dy[k];
 
-                if (pictureArr[i][j] == 1 && visited[i][j] == 0) {  // 시작 좌표가 그림이고, 아직 방문하지 않았으면
-                    int size = 0;  // 그림의 크기
+                        // — 기존
+                        // if ((x >= 0 && x < n && y >= 0 && y < m) | (board.get(x)[y] == 1)) continue;
+                        if (x < 0 || x >= n || y < 0 || y >= m) continue;
+                        if (board[x][y] != 1 || vis[x][y])      continue;
 
-                    queue.add(new Pair(i, j));  // 큐에 삽입
-                    visited[i][j] = 1;  // 방문 완료 갱신
-
-                    while (!queue.isEmpty()) {  // 큐가 비어있지 않으면 (큐가 빌 때까지 반복)
-                        Pair pair = queue.remove();  // 큐에서 front 좌표를 꺼내고
-                        size++;  // 해당 그림의 크기 갱신
-
-                        for (int d = 0; d < 4; d++) {  // 해당 좌표의 주변 좌표를 우상좌하 순으로 탐색
-                            int tmpX = pair.X + dx[d];  // 주변 좌표 : (tmpX, tmpY)
-                            int tmpY = pair.Y + dy[d];
-
-                            if (pictureArr[tmpX][tmpY] == 1 && visited[tmpX][tmpY] == 0) {  // 그림이고, 아직 방문하지 않았으면
-                                queue.add(new Pair(tmpX, tmpY));  // 큐에 해당 좌표 삽입
-                                visited[tmpX][tmpY] = 1;  // 방문 완료 갱신
-                            }
-                        }
+                        vis[x][y] = true;
+                        q.offer(new int[]{x, y});
                     }
-                    count++;  // 그림의 개수 갱신
-                    if (size > maxSize) maxSize = size;  // 그림의 최대 크기 갱신
                 }
+                picNum += 1;
+                maxArea = Math.max(maxArea, area);
             }
         }
 
-        System.out.println(count + "\n" + maxSize);
-
-
+        // 5) 결과 출력
+        System.out.println(picNum);
+        System.out.println(maxArea);
 
     }
 }
-
-class Pair {  // 좌표 값을 저장할 자료구조 Pair
-    int X;
-    int Y;
-
-    Pair(int x, int y) {
-        this.X = x;
-        this.Y = y;
-    }
-}
-
-
